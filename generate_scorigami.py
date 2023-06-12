@@ -5,22 +5,22 @@ unique_scores = []
 every_score_never_done = []
 frequency_dictionary = {}
 heatmap_hexcodes = [
-    "",
-    "#00FF00",
+    "#0000FF", #new scores for that year
+    "#00FF00", #frequency of 1 
     "#2BFF00",
     "#55FF00",
     "#80FF00",
     "#AAFF00",
-    "#D5FF00",
+    "#D5FF00", 
 
-    "#FFFF00",
+    "#FFFF00", #frequency of 6
 
     "#FFD500",
     "#FFAA00",
     "#FF8000",
     "#FF5500",
     "#FF2B00",
-    "#FF0000"
+    "#FF0000" #frequncy of 13 
 ] #the heatmap functionality will break if future datasets return a score frequency of 14, how do you automate this?
  
 #STEP ONE EXTRACT DATA WE NEED AND REFORMAT IT
@@ -48,6 +48,7 @@ for i in data:
     base_array.append(concated_data)
 
 #STEP TWO GENERATE A WHITE BACKGROUND BY FIRST WORKING OUT DIMENSIONS
+#thats not what that does
 for i in base_array:
     data_splitter = i.split(",")
     if int(data_splitter[2]) > biggest_win_biggest_lose[0]: biggest_win_biggest_lose[0] = int(data_splitter[2]) #if winning score is greater than current highest known update it
@@ -68,6 +69,7 @@ for key in unique_scores:
     out_js.write("'"+key+"': [\n")
     #loop through base array and find matching scores
     frequency = 0
+    years_happened = []
     for i in base_array:
         data_splitter = i.split(",")
         check_string = data_splitter[2]+":"+data_splitter[3]
@@ -75,7 +77,12 @@ for key in unique_scores:
             #out_js.write("'"+i+"',\n")
             out_js.write("'<b>Game "+data_splitter[4]+"-"+data_splitter[7]+":</b> "+data_splitter[0]+" v "+data_splitter[1]+" <br>@ "+data_splitter[6]+", "+data_splitter[5]+"',\n")
             frequency += 1
-    #print (key+"_"+str(frequency)) #generates frequency used for heatmap
+            years_happened.append(data_splitter[5])
+    #print (key+"_"+str(frequency))     print(years_happened[0][-4:])
+    # #generates frequency used for heatmap
+    #wait this breaks if a score has happened for the first time twice in one year D:
+    if frequency == 1 and len(years_happened) == 1 and years_happened[0][-4:] == "2023": #this loop works out scores that have only happened once and this year too
+        frequency = 0
     frequency_dictionary[key] = frequency
     out_js.write("],\n")
 out_js.write("}\n")
@@ -157,7 +164,7 @@ out_svg.write("</div>\n")
 out_svg.write("<div style='flex: 25%;'>\n")
 out_svg.write("<div style='position: relative;'>\n")
 out_svg.write("<h1 style='text-align: center'>VFL/AFL Scorigami</h1>\n")
-out_svg.write("<p>Last updated: 4-Jun-2023</p>\n")
+out_svg.write("<p style='text-align: center'>8-May-1897 to 4-Jun-2023</p>\n")
 out_svg.write("<h2 id='score'>Hello</h2>\n")
 out_svg.write("<h2 id='occured'>World !</h2>\n")
 out_svg.write("</div>\n")
